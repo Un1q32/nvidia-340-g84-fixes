@@ -181,6 +181,28 @@ DISPLAY=:0 XAUTHORITY=/home/uniq/.Xauthority glxinfo -B
 Everything else needed to reproduce the patched driver and the working GLX
 stack is in this repository.
 
+## 32-bit binaries (Steam / games)
+
+The 32-bit userspace has the same two problems as 64-bit. They are applied by:
+
+```sh
+sudo NVIDIA_SRC=/root/NVIDIA-Linux-x86_64-340.108 nvidia/patch-32bit.sh
+```
+
+That replaces the 32-bit `libnvidia-tls` with the official `32/tls/` build and
+points `/usr/lib32/libGL.so.1`, `libGLX.so.0` and `libOpenGL.so.0` at NVIDIA's
+32-bit `libGL`. The boot service and Portage hook maintain the same 32-bit
+links, so package updates do not undo them. Verify with:
+
+```sh
+tools/verify-32bit.sh
+```
+
+The NVIDIA installer does **not** provide the 32-bit X11 runtime. Steam and
+32-bit games need it; install the `abi_x86_32` X11 packages (see
+`nvidia/README-32bit.md`). On the tested system `steam-launcher` also required
+`sys-libs/libudev-compat` to be unmasked (`~amd64`).
+
 ## Caveats
 
 * Pointing `libGLX.so.0`/`libOpenGL.so.0` at NVIDIA's libGL effectively
@@ -208,6 +230,8 @@ system/package.mask/xorg-server-121
 nvidia/fetch-driver.sh         download + verify + extract 340.108
 nvidia/install-userspace.sh    nvidia-installer --no-kernel-module
 nvidia/install-tls-variant.sh  swap to the official tls/ build (64/32)
+nvidia/patch-32bit.sh          apply/verify the 32-bit TLS + glvnd fixes
+nvidia/README-32bit.md         32-bit drivers, Steam dependencies
 nvidia/README-install-driver.md
 nvidia/README-libnvidia-tls.md
 nvidia/checksums.txt
@@ -216,7 +240,9 @@ xorg/README.md
 xorg/overlay/                  Xorg 1.20.14 ebuild + patches + Manifest
 xorg/conf/                     sample 20-nvidia.conf, 10-glx-load.conf
 tools/glxctx.c, tools/glxq.c   diagnostics
+tools/glxtest32.c              32-bit GLX probe
 tools/verify.sh
+tools/verify-32bit.sh
 ```
 
 ## License
