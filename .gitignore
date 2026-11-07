@@ -1,0 +1,6 @@
+*.o
+*.ko
+*.so
+*.so.*
+build/
+*.tar.*

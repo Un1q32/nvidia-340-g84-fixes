@@ -1,0 +1,20 @@
+# Observed on the test machine (NVIDIA 340.108, Gentoo, glibc 2.43).
+# Sizes and hashes identify the two official builds; across other driver
+# builds use the syscall test in README-libnvidia-tls.md instead.
+
+# Official installer (70,165,522 bytes)
+c671d4f1b7c09bc1af079b98b447adb06d704b04f802f7045a611fa50133b71b  NVIDIA-Linux-x86_64-340.108.run
+
+# 64-bit
+db12838fdaae44fc5187efd6f67d37030fbbc3fca170767a5daa82e35849f4cf  libnvidia-tls.so.340.108 (64, tls/ GOOD, 13008 bytes, 0 syscalls)
+4b1e49f942ef9e26bd6d1c9534bef84d7960b8284e1d54ed9a83dcba4699ecaa  libnvidia-tls.so.340.108 (64, default BAD, 12696 bytes, 2 syscalls)
+
+# 32-bit
+ae69e089e6d014ab6f9e4b9fde9201a02f51334b9d1c0eeedcc88383329514c0  libnvidia-tls.so.340.108 (32, tls/ GOOD, 13752 bytes, 0 syscalls)
+cc1c3c2f918dfaa2e77a15e12885ce5b991cd4eb280292405848051f17ea7195  libnvidia-tls.so.340.108 (32, default BAD, 13820 bytes, 2 syscalls)
+
+# Related NVIDIA userspace components (340.108)
+593486c15741fed0a53215469537f77e5bceb716e733a8879c308d532648f5fc  libGL.so.340.108 (64, monolithic GL/GLX)
+a3ed2de04524b36b23078b83488be8f5b5078c4c7e633d28a8524815c60e60b9  libglx.so.340.108 (server GLX module)
+60a1e9dc6460c8db702f88dd4dc24edec43c1f3ab5df1797b17a1000bbbd1063  nvidia_drv.so (Xorg driver)
+94edb78b98a71ad8e654f11cf1b6a9a3f393da7a05eaa8636e1a83e0eba28de6  libnvidia-glcore.so.340.108 (64)

@@ -1,0 +1,43 @@
+--- a/dix/privates.c
++++ b/dix/privates.c
+@@ -56,6 +56,8 @@
+ #include "windowstr.h"
+ #include "resource.h"
+ #include "privates.h"
++
++#define DIX_PRIVATES_CAPACITY 4096
+ #include "gcstruct.h"
+ #include "cursorstr.h"
+ #include "colormapst.h"
+@@ -137,6 +139,21 @@
+ {
+     void *new_privates;
+ 
++    /*
++     * Keep private storage at a fixed capacity so it never moves. The
++     * proprietary NVIDIA driver caches pointers into it across
++     * dixRegisterPrivateKey() calls; realloc() invalidated them.
++     */
++    if (!*privates) {
++        new_privates = calloc(1, DIX_PRIVATES_CAPACITY);
++        if (!new_privates)
++            return FALSE;
++        *privates = new_privates;
++    }
++    if ((unsigned)old_offset + bytes <= DIX_PRIVATES_CAPACITY) {
++        memset((char *) *privates + old_offset, '\0', bytes);
++        return TRUE;
++    }
+     new_privates = realloc(*privates, old_offset + bytes);
+     if (!new_privates)
+         return FALSE;
+@@ -514,7 +531,8 @@
+         p = NULL;
+     }
+     else {
+-        if (!(p = malloc(size)))
++        unsigned cap = size < DIX_PRIVATES_CAPACITY ? DIX_PRIVATES_CAPACITY : size;
++        if (!(p = calloc(1, cap)))
+             return FALSE;
+     }
+ 

@@ -1,0 +1,25 @@
+# /etc/portage/bashrc
+#
+# SECURITY NOTE: the user bashrc is sourced by every ebuild phase.
+# Keep it tiny and side-effect free except for the explicit hook below.
+
+if [ "${EBUILD_PHASE}" = "postinst" ]; then
+    case "${CATEGORY}/${PN}" in
+        media-libs/libglvnd|media-libs/mesa|x11-base/xorg-server|x11-drivers/nvidia-drivers|x11-apps/mesa-progs|media-libs/freeglut)
+            # Allow the fixup to write the live library symlinks from inside
+            # the ebuild sandbox.  Skip ldconfig here (not needed for links,
+            # and the cache is updated by the boot service).
+            echo "$(date '+%F %T') postinst ${CATEGORY}/${PF}" \
+                >>/var/log/nvidia-340-fixups.log 2>/dev/null
+            command -v addwrite >/dev/null 2>&1 && {
+                addwrite /usr/lib64
+                addwrite /usr/lib32
+                addwrite /etc/ld.so.cache
+            }
+            NVIDIA_FIXUP_SKIP_LDCONFIG=1 \
+                /usr/local/sbin/nvidia-340-fixups.sh \
+                >>/var/log/nvidia-340-fixups.log 2>&1
+            echo "fixup_rc=$?" >>/var/log/nvidia-340-fixups.log 2>/dev/null
+            ;;
+    esac
+fi

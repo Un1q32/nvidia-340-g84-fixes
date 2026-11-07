@@ -1,0 +1,13 @@
+#!/sbin/openrc-run
+
+description="Re-assert NVIDIA 340.108 userspace library wiring"
+
+depend() {
+    before display-manager
+}
+
+start() {
+    ebegin "Fixing NVIDIA 340 userspace links"
+    /usr/local/sbin/nvidia-340-fixups.sh
+    eend $?
+}
